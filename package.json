@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "NODE_ENV=dev nodemon index.js",
     "lint": "eslint .",
-    "test": "jest --verbose"
+    "test": "NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --forceExit"
   },
   "jest": {
     "testEnvironment": "node"
@@ -31,6 +31,7 @@
   "devDependencies": {
     "eslint": "^8.10.0",
     "jest": "^27.5.1",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "supertest": "^6.2.4"
   }
 }
