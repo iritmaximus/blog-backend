@@ -1,5 +1,8 @@
+const mongoose = require("mongoose");
 const request = require("supertest");
+
 const app = require("../app");
+const Blog = require("../models/blog");
 
 const listHelper = require("../utils/list_helper");
 
@@ -70,6 +73,7 @@ describe("most blogs", () => {
   let blog = {
     title: "Canonical string reduction",
     author: "Edsger W. Dijkstra",
+    url: "initial.org",
     likes: 12
   };
 
@@ -102,12 +106,46 @@ describe("most blogs", () => {
 });
 
 describe("part 4b", () => {
+  // one blog
+  let blog = {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    url: "initial.org",
+    likes: 12
+  };
+
+  beforeAll(async () => {
+    await Blog.deleteMany({});
+    const blogObject = new Blog(blog);
+    await blogObject.save();
+  });
+
   it("GET", async () => {
     const result = await request(app).get("/api/blogs");
-    expect(result).toHaveLength(1);
+    expect(result.body).toHaveLength(1);
   });
-  it.todo("unique identifier is id");
-  it.todo("POST works");
+
+  it("unique identifier is id", async () => {
+    const result = await request(app).get("/api/blogs");
+    expect(result.body[0].id).toBeDefined();
+  });
+
+  it("POST works", async () => {
+    const newItem = {
+      title: "Test test",
+      author: "me",
+      url: "https://me.org",
+      likes: 5
+    };
+
+    const result = await request(app)
+      .post("/api/blogs")
+      .send(newItem);
+    expect(result.body)
+      .toHaveLength(2)
+      .toBeDefined();
+  });
+
   it.todo("no likes defaults to 0");
   it.todo("if url and title is missing => error");
 });
