@@ -11,6 +11,15 @@ blogRouter.get("/", async (request, response) => {
 blogRouter.post("/", async (request, response) => {
   const blog = new Blog(request.body);
 
+  if (blog.likes === undefined) {
+      blog.likes = 0;
+  }
+
+  if (blog.title === undefined || blog.url === undefined) {
+      response.status(400).json({"error": "Title or url not defined"});
+      return;
+  }
+
   const result = await blog.save();
   response.status(201).json(result);
 });

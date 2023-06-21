@@ -114,7 +114,7 @@ describe("part 4b", () => {
     likes: 12
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await Blog.deleteMany({});
     const blogObject = new Blog(blog);
     await blogObject.save();
@@ -138,14 +138,50 @@ describe("part 4b", () => {
       likes: 5
     };
 
-    const result = await request(app)
+    await request(app)
       .post("/api/blogs")
       .send(newItem);
-    expect(result.body)
-      .toHaveLength(2)
-      .toBeDefined();
+
+    const result = await request(app).get("/api/blogs");
+    expect(result.body).toHaveLength(2);
   });
 
-  it.todo("no likes defaults to 0");
-  it.todo("if url and title is missing => error");
+  it("no likes defaults to 0", async () => {
+      const noLikesItem = {
+          title: "New test",
+          author: "Someone",
+          url: "hih.xyz"
+      }
+
+      await request(app)
+        .post("/api/blogs")
+        .send(noLikesItem);
+
+      const result = await request(app).get("/api/blogs");
+      expect(result.body[1].likes).toEqual(0);
+  });
+
+  it("if url and title is missing => error", async () => {
+      const noUrlItem = {
+          title: "Music",
+          author: "Someone I used to know",
+          likes: 40
+      }
+      const noTitleItem = {
+          author: "Someone I used to know",
+          url: "pöps.dev",
+          likes: 40
+      }
+
+      const resultNoUrl = await request(app)
+        .post("/api/blogs")
+        .send(noUrlItem);
+
+      const resultNoTitle = await request(app)
+        .post("/api/blogs")
+        .send(noTitleItem);
+
+      expect(resultNoUrl.status).toEqual(400);
+      expect(resultNoTitle.status).toEqual(400);
+  });
 });
