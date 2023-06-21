@@ -184,4 +184,39 @@ describe("part 4b", () => {
       expect(resultNoUrl.status).toEqual(400);
       expect(resultNoTitle.status).toEqual(400);
   });
+
+  it("DELETE deletes item", async () => {
+      const items = await Blog.find({});
+      const result = await request(app).delete(`/api/blogs/${items[0].id}`)
+      expect(result.status).toEqual(200);
+  });
+
+  it("DELETE sends 404 if no item", async () => {
+      const result = await request(app).delete("/api/blogs/1"); // id is mongoose id obj, not int
+      expect(result.status).toEqual(404);
+  });
+
+  it("PUT updates items likes", async () => {
+      const blog = {
+          likes: 230
+      }
+      const items = await Blog.find({});
+      await request(app)
+        .put(`/api/blogs/${items[0].id}`)
+        .send(blog);
+
+      const result = await request(app).get("/api/blogs");
+      expect(result.body[0].likes).toEqual(230);
+  });
+
+  it("PUT sends 404 if not found", async () => {
+      const blog = {
+          likes: 2358
+      } 
+
+      const result = await request(app)
+        .put("/api/blogs/1")
+        .send(blog);
+      expect(result.status).toEqual(404);
+  });
 });
