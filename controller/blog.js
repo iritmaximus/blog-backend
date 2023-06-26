@@ -1,36 +1,53 @@
+const mongoose = require("mongoose");
+
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
+const User = require("../models/user");
+
+
+const USER_POPULATE = {"name": 1, "username": 1};
 
 // returns all blogs in the datbase as json
 blogRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog
+    .find({})
+    .populate("user", USER_POPULATE);
   response.json(blogs);
 });
 
 // just adds new blog to the db
 blogRouter.post("/", async (request, response) => {
-  const blog = new Blog(request.body);
-
-  if (blog.likes === undefined) {
-      blog.likes = 0;
-  }
+  const user = await User.findOne({});
+  const blog = new Blog({
+    title: request.body.title,
+    author: request.body.author,
+    url: request.body.url,
+    likes: request.body.likes === undefined ? 0 : request.body.likes,
+    user: user.id
+  })
 
   if (blog.title === undefined || blog.url === undefined) {
       response.status(400).json({"error": "Title or url not defined"});
       return;
   }
 
-  const result = await blog.save();
+  await blog.save();
+  const result = await blog.populate("user", USER_POPULATE);
+  const blogId = result.id;
+
+  user.blogs = user.blogs.concat(blogId);
+  user.save();
+
   response.status(201).json(result);
 });
 
 blogRouter.delete("/:id", async (request, response) => {
   try {
     await Blog.findByIdAndDelete(request.params.id);
-    response.status(200).json({"message": "User deleted"});
+    response.status(200).json({"message": "Blog deleted"});
     return;
   } catch {
-    response.status(404).json({"error": "User not found, can't be deleted"});
+    response.status(404).json({"error": "Blog not found, can't be deleted"});
     return;
   }
 });

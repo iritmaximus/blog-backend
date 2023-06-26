@@ -3,6 +3,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 describe("Blogs", () => {
   // one blog
@@ -13,13 +14,24 @@ describe("Blogs", () => {
     likes: 12
   };
 
+  const user = {
+    name: "Pööpi",
+    username: "pöperö123",
+    password: "notsecure",
+  }
+
   beforeEach(async () => {
+    await User.deleteMany({});
+    const userObject = new User(user);
+    await userObject.save();
+
     await Blog.deleteMany({});
+    blog.user = await User.findOne({});
     const blogObject = new Blog(blog);
     await blogObject.save();
   });
 
-  it("GET", async () => {
+  it("GET has one blog", async () => {
     const result = await request(app).get("/api/blogs");
     expect(result.body).toHaveLength(1);
   });
@@ -27,6 +39,11 @@ describe("Blogs", () => {
   it("GET unique identifier is id", async () => {
     const result = await request(app).get("/api/blogs");
     expect(result.body[0].id).toBeDefined();
+  });
+
+  it("GET display user in blogs", async () => {
+    const result = await request(app).get("/api/blogs");
+    expect(result.body[0].user).toBeDefined();
   });
 
   it("POST works", async () => {
