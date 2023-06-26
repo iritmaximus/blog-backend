@@ -1,9 +1,6 @@
 const mongoose = require("mongoose");
 const request = require("supertest");
 
-const app = require("../app");
-const Blog = require("../models/blog");
-
 const listHelper = require("../utils/list_helper");
 
 
@@ -42,7 +39,6 @@ describe("total likes", () => {
   });
 });
 
-
 describe("favoriteBlog", () => {
   let blog = {
     title: "Canonical string reduction",
@@ -65,7 +61,6 @@ describe("favoriteBlog", () => {
     expect(result).toEqual(blog);
   });
 });
-
 
 describe("most blogs", () => {
 
@@ -102,121 +97,5 @@ describe("most blogs", () => {
   test("of list of blogs", () => {
     const result = listHelper.mostBlogs(listHelper.blogs);
     expect(result).toEqual(comparisonBlog);
-  });
-});
-
-describe("part 4b", () => {
-  // one blog
-  let blog = {
-    title: "Canonical string reduction",
-    author: "Edsger W. Dijkstra",
-    url: "initial.org",
-    likes: 12
-  };
-
-  beforeEach(async () => {
-    await Blog.deleteMany({});
-    const blogObject = new Blog(blog);
-    await blogObject.save();
-  });
-
-  it("GET", async () => {
-    const result = await request(app).get("/api/blogs");
-    expect(result.body).toHaveLength(1);
-  });
-
-  it("unique identifier is id", async () => {
-    const result = await request(app).get("/api/blogs");
-    expect(result.body[0].id).toBeDefined();
-  });
-
-  it("POST works", async () => {
-    const newItem = {
-      title: "Test test",
-      author: "me",
-      url: "https://me.org",
-      likes: 5
-    };
-
-    await request(app)
-      .post("/api/blogs")
-      .send(newItem);
-
-    const result = await request(app).get("/api/blogs");
-    expect(result.body).toHaveLength(2);
-  });
-
-  it("no likes defaults to 0", async () => {
-      const noLikesItem = {
-          title: "New test",
-          author: "Someone",
-          url: "hih.xyz"
-      }
-
-      await request(app)
-        .post("/api/blogs")
-        .send(noLikesItem);
-
-      const result = await request(app).get("/api/blogs");
-      expect(result.body[1].likes).toEqual(0);
-  });
-
-  it("if url and title is missing => error", async () => {
-      const noUrlItem = {
-          title: "Music",
-          author: "Someone I used to know",
-          likes: 40
-      }
-      const noTitleItem = {
-          author: "Someone I used to know",
-          url: "pöps.dev",
-          likes: 40
-      }
-
-      const resultNoUrl = await request(app)
-        .post("/api/blogs")
-        .send(noUrlItem);
-
-      const resultNoTitle = await request(app)
-        .post("/api/blogs")
-        .send(noTitleItem);
-
-      expect(resultNoUrl.status).toEqual(400);
-      expect(resultNoTitle.status).toEqual(400);
-  });
-
-  it("DELETE deletes item", async () => {
-      const items = await Blog.find({});
-      const result = await request(app).delete(`/api/blogs/${items[0].id}`)
-      expect(result.status).toEqual(200);
-  });
-
-  it("DELETE sends 404 if no item", async () => {
-      const result = await request(app).delete("/api/blogs/1"); // id is mongoose id obj, not int
-      expect(result.status).toEqual(404);
-  });
-
-  it("PUT updates items likes", async () => {
-      const blog = {
-          likes: 230
-      }
-      const items = await Blog.find({});
-      await request(app)
-        .put(`/api/blogs/${items[0].id}`)
-        .send(blog);
-
-      const result = await request(app).get("/api/blogs");
-      expect(result.body[0].likes).toEqual(230);
-  });
-
-  it("PUT sends 404 if not found", async () => {
-      const blog = {
-          likes: 2358
-      } 
-
-      const result = await request(app)
-        .put("/api/blogs/1")
-        .send(blog);
-      expect(result.status).toEqual(404);
   });
 });
