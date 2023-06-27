@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 
 const blogRouter = require("./controller/blog");
 const userRouter = require("./controller/user");
+const loginRouter = require("./controller/login");
 
 
 
@@ -27,6 +28,7 @@ app.use(express.json());
 
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", userRouter);
+app.use("/api/login", loginRouter);
 
 
 module.exports = app;
