@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
@@ -17,7 +18,14 @@ blogRouter.get("/", async (request, response) => {
 
 // just adds new blog to the db
 blogRouter.post("/", async (request, response) => {
-  const user = await User.findOne({});
+
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (decodedToken.id === undefined) {
+    response.status(401).json({"error": "Authentication failed"});
+    return;
+  }
+  const user = await User.findOne({"_id": decodedToken.id});
+
   const blog = new Blog({
     title: request.body.title,
     author: request.body.author,
