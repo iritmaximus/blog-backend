@@ -4,7 +4,7 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-const tokenExtractor = require("./middleware/middleware");
+const middleware = require("./middleware/middleware");
 
 const blogRouter = require("./controller/blog");
 const userRouter = require("./controller/user");
@@ -27,7 +27,8 @@ console.log("connected to the db");
 
 app.use(cors());
 app.use(express.json());
-app.use(tokenExtractor);
+app.use(middleware.tokenExtractor);
+app.use(middleware.userExtractor);
 
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", userRouter);

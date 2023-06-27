@@ -18,13 +18,12 @@ blogRouter.get("/", async (request, response) => {
 
 // just adds new blog to the db
 blogRouter.post("/", async (request, response) => {
+  const user = request.user;
 
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (decodedToken.id === undefined) {
+  if (user === undefined) {
     response.status(401).json({"error": "Authentication failed"});
     return;
   }
-  const user = await User.findOne({"_id": decodedToken.id});
 
   const blog = new Blog({
     title: request.body.title,
@@ -50,6 +49,19 @@ blogRouter.post("/", async (request, response) => {
 });
 
 blogRouter.delete("/:id", async (request, response) => {
+  const blog = await Blog.findOne({"_id": request.params.id});
+  const user = request.user;
+
+  if (!blog) {
+    response.status(404).json({"error": "No blog with id"});
+    return;
+  }
+
+  if (!(user._id.toString() === blog.user.toString())) {
+    response.status(401).json({"error": "Not authorized"});
+    return;
+  }
+
   try {
     await Blog.findByIdAndDelete(request.params.id);
     response.status(200).json({"message": "Blog deleted"});
