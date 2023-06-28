@@ -23,7 +23,7 @@ userRouter.post("/", async (req, res) => {
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
 
-  if (username === undefined || password === undefined) {
+  if (!username || !password || !passwordHash) {
     response.status(400).json({"error": "Username or password not provided"});
     return;
   }

@@ -18,7 +18,13 @@ const tokenExtractor = (request, response, next) => {
 
 const userExtractor = async (request, response, next) => {
   if (request.token) {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET);
+    let decodedToken = "";
+    try {
+      decodedToken = jwt.verify(request.token, process.env.SECRET);
+    } catch (e) {
+      console.log("Malformatted token:", request.token);
+      request.user = null;
+    }
     const user = await User.findOne({"_id": decodedToken.id});
     request.user = user;
   } else {

@@ -20,7 +20,7 @@ blogRouter.get("/", async (request, response) => {
 blogRouter.post("/", async (request, response) => {
   const user = request.user;
 
-  if (user === undefined) {
+  if (!user) {
     response.status(401).json({"error": "Authentication failed"});
     return;
   }
@@ -49,7 +49,15 @@ blogRouter.post("/", async (request, response) => {
 });
 
 blogRouter.delete("/:id", async (request, response) => {
-  const blog = await Blog.findOne({"_id": request.params.id});
+  let id = "";
+  try {
+    id = mongoose.Types.ObjectId(request.params.id);
+  } catch (e) {
+    response.status(404).json({"error": "Malformatted id"});
+    return;
+  }
+
+  const blog = await Blog.findOne({"_id": id});
   const user = request.user;
 
   if (!blog) {
