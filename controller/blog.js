@@ -81,6 +81,12 @@ blogRouter.delete("/:id", async (request, response) => {
 });
 
 blogRouter.put("/:id", async (request, response) => {
+  const user = request.user;
+  if (!user) {
+    response.status(401).json({"error": "Authorization failed"});
+    return;
+  }
+
   const blog = {
     likes: request.body.likes,
   }
