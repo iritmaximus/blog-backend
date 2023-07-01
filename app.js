@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
+const morgan = require("morgan");
 
 const middleware = require("./middleware/middleware");
 
@@ -27,6 +28,7 @@ console.log("connected to the db");
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan("tiny"));
 app.use(middleware.tokenExtractor);
 app.use(middleware.userExtractor);
 
