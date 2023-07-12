@@ -208,7 +208,9 @@ describe("Blogs", () => {
       .send(blog)
       .set("Authorization", "Bearer " + token);
 
+    const getResponse = await request(app).get("/api/blogs")
     expect(result.status).toEqual(401);
+    expect(getResponse.body.length).toEqual(1);
   });
   it("POST fails if malformatted auth header", async () => {
     const token = "aoe;qhjkarc.,gqkjnt";
@@ -223,6 +225,9 @@ describe("Blogs", () => {
       .post("/api/blogs")
       .send(blog)
       .set("Authorization", "Bearer " + token);
+
+    const getResponse = await request(app).get("/api/blogs")
     expect(result.status).toEqual(401);
+    expect(getResponse.body.length).toEqual(1);
   });
 });
