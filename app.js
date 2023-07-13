@@ -16,7 +16,7 @@ const loginRouter = require("./controller/login");
 
 // connect to the db
 try {
-  mongoose.set('strictQuery', true);
+  mongoose.set("strictQuery", true);
   mongoose.connect(config.MONGO_URI);
 } catch(e) {
   console.log("error connecting to the db");

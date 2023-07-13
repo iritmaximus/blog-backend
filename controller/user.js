@@ -8,7 +8,7 @@ const filter = {
   "title": 1,
   "url": 1,
   "likes": 1
-}
+};
 
 
 userRouter.get("/", async (req, res) => {

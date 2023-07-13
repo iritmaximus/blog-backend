@@ -31,11 +31,11 @@ blogRouter.post("/", async (request, response) => {
     url: request.body.url,
     likes: request.body.likes === undefined ? 0 : request.body.likes,
     user: user.id
-  })
+  });
 
   if (blog.title === undefined || blog.url === undefined) {
-      response.status(400).json({"error": "Title or url not defined"});
-      return;
+    response.status(400).json({"error": "Title or url not defined"});
+    return;
   }
 
   await blog.save();
@@ -89,14 +89,14 @@ blogRouter.put("/:id", async (request, response) => {
 
   const blog = {
     likes: request.body.likes,
-  }
+  };
 
   try {
     const newBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {new: true});
     response.status(200).json(newBlog);
   } catch {
-      response.status(404).json({"error": "User not found"});
+    response.status(404).json({"error": "User not found"});
   }
-})
+});
 
 module.exports = blogRouter;

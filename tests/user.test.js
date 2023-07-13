@@ -14,7 +14,7 @@ describe("Users", () => {
       name: "Pööperöinen",
       username: "pöpö123",
       password: "notsecurepassword",
-    }
+    };
 
     const result = await request(app)
       .post("/api/users")
@@ -29,7 +29,7 @@ describe("Users", () => {
       name: "Pöperö",
       username: "pöpö456",
       password: "somethingnotsecure",
-    }
+    };
 
     await request(app)
       .post("/api/users")
@@ -48,7 +48,7 @@ describe("Users", () => {
       name: "Pöperöinen",
       username: "pöpö789",
       password: "something",
-    }
+    };
 
     await request(app)
       .post("/api/users")
@@ -64,12 +64,12 @@ describe("Users", () => {
       name: "Pöp",
       username: "pöp123",
       password: "notsecure",
-    }
+    };
     const duplicateUser = {
       name: "Pöpi",
       username: "pöp123",
       password: "notsecurepassword",
-    }
+    };
 
     await request(app)
       .post("/api/users")
@@ -86,7 +86,7 @@ describe("Users", () => {
       name: "Hihi",
       username: "ai",
       password: "notsecureatall"
-    }
+    };
     const result = await request(app)
       .post("/api/users")
       .send(user);
@@ -99,7 +99,7 @@ describe("Users", () => {
       name: "Hihi",
       username: "hihhih",
       password: "ai"
-    }
+    };
     const result = await request(app)
       .post("/api/users")
       .send(user);
@@ -112,7 +112,7 @@ describe("Users", () => {
       name: "Hihi",
       username: "hihhih",
       password: "ai"
-    }
+    };
     const requestResult = await request(app)
       .post("/api/users")
       .send(user);
@@ -127,12 +127,12 @@ describe("Users", () => {
       name: "Hih",
       username: "hihhih",
       password: "aiai"
-    }
+    };
     const duplicateUser = {
       name: "Hih",
       username: "hihhih",
       password: "aiai"
-    }
+    };
 
     await request(app)
       .post("/api/users")

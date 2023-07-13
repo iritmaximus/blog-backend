@@ -9,12 +9,12 @@ const getToken = request => {
     return tokenWithBearer.replace("Bearer ", "");
   }
   return null;
-}
+};
 
 const tokenExtractor = (request, response, next) => {
   request.token = getToken(request);
   next();
-}
+};
 
 const userExtractor = async (request, response, next) => {
   if (request.token) {
@@ -31,7 +31,7 @@ const userExtractor = async (request, response, next) => {
     request.user = null;
   }
   next();
-}
+};
 
 module.exports = {
   tokenExtractor,
