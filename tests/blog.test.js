@@ -10,7 +10,7 @@ const generateToken = async (user) => {
   const userForToken = {
     username: user.username,
     password: user.password
-  }
+  };
 
   const response = await request(app)
     .post("/api/login")
@@ -20,15 +20,20 @@ const generateToken = async (user) => {
   if (response.status === 200 && token) {
     return token;
   } else {
-    throw Error("Token creation failed");
+    throw ValueError("Token creation failed");
   }
-}
+};
+
+const getResponseLength = async () => {
+  const result = await request(app).get("/api/blogs");
+  return result.body.length;
+};
 
 const user = {
   name: "Pööpi",
-  username: "pöperö123",
-  password: "notsecure",
-}
+  username: "pöpö123",
+  password: "unsecure",
+};
 
 let blog = {
   title: "Canonical string reduction",
@@ -46,11 +51,10 @@ describe("Blogs", () => {
 
     // blog is always owned by the automatically created user above
     await Blog.deleteMany({});
-    blog.user = await User.findOne({});
     await request(app)
       .post("/api/blogs")
-      .send(blog)
-      .set("Authorization", "Bearer " + await generateToken(user));
+      .set("Authorization", "Bearer " + await generateToken(user))
+      .send(blog);
   });
 
   it("GET has one blog", async () => {
@@ -66,6 +70,7 @@ describe("Blogs", () => {
   it("GET display user in blogs", async () => {
     const result = await request(app).get("/api/blogs");
     expect(result.body[0].user).toBeDefined();
+    expect(result.body[0].user !== null).toBe(true);
   });
 
   it("POST works", async () => {
@@ -92,10 +97,10 @@ describe("Blogs", () => {
     const token = await generateToken(user);
 
     const noLikesItem = {
-        title: "New test",
-        author: "Someone",
-        url: "hih.xyz"
-    }
+      title: "New test",
+      author: "Someone",
+      url: "hih.xyz"
+    };
 
     await request(app)
       .post("/api/blogs")
@@ -110,37 +115,44 @@ describe("Blogs", () => {
     const token = await generateToken(user);
 
     const noUrlItem = {
-        title: "Music",
-        author: "Someone I used to know",
-        likes: 40
-    }
+      title: "Music",
+      author: "Someone I used to know",
+      likes: 40
+    };
     const noTitleItem = {
-        author: "Someone I used to know",
-        url: "pöps.dev",
-        likes: 40
-    }
+      author: "Someone I used to know",
+      url: "pöps.dev",
+      likes: 40
+    };
 
+    const preLength = getResponseLength();
     const resultNoUrl = await request(app)
       .post("/api/blogs")
       .send(noUrlItem)
       .set("Authorization", "Bearer " + token);
-
     const resultNoTitle = await request(app)
       .post("/api/blogs")
       .send(noTitleItem)
       .set("Authorization", "Bearer " + token);
+    const postLength = getResponseLength();
 
     expect(resultNoUrl.status).toEqual(400);
     expect(resultNoTitle.status).toEqual(400);
+    expect(preLength).toEqual(postLength);
   });
 
   it("DELETE deletes item", async () => {
     const token = await generateToken(user);
     const items = await Blog.find({});
+
+    const preLength = await getResponseLength();
     const result = await request(app)
       .delete(`/api/blogs/${items[0].id}`)
       .set("Authorization", "Bearer " + token);
+    const postLength = await getResponseLength();
+
     expect(result.status).toEqual(200);
+    expect(preLength - 1).toEqual(postLength);
   });
 
   it("DELETE sends 404 if no item", async () => {
@@ -154,8 +166,8 @@ describe("Blogs", () => {
   it("PUT updates items likes", async () => {
     const token = await generateToken(user);
     const blog = {
-        likes: 230
-    }
+      likes: 230
+    };
     const items = await Blog.find({});
     await request(app)
       .put(`/api/blogs/${items[0].id}`)
@@ -169,8 +181,8 @@ describe("Blogs", () => {
   it("PUT sends 404 if not found", async () => {
     const token = await generateToken(user);
     const blog = {
-        likes: 2358
-    } 
+      likes: 2358
+    }; 
 
     const result = await request(app)
       .put("/api/blogs/1")
@@ -186,13 +198,14 @@ describe("Blogs", () => {
       likes: 6
     };
 
+    const preLength = getResponseLength();
     const result = await request(app)
       .post("/api/blogs")
       .send(blog);
-    const getResponse = await request(app).get("/api/blogs")
+    const postLength = getResponseLength();
 
     expect(result.status).toEqual(401);
-    expect(getResponse.body.length).toEqual(1);
+    expect(preLength).toEqual(postLength);
   });
   it("POST fails if incorrect user auth header", async () => {
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InDDtnDDtjEyMyIsImlkIjoiNjQ5YmQ3NjFjMmNiMDVjMDJhMTFlYzgzIiwiaWF0IjoxNjg3OTM1MDA2fQ.qoWfO9xdrOPUs8ynF_9SVvuIv7d8xUch_hztBMyKeLU";
@@ -203,14 +216,15 @@ describe("Blogs", () => {
       likes: 7
     };
 
+    const preLength = await getResponseLength();
     const result = await request(app)
       .post("/api/blogs")
       .send(blog)
       .set("Authorization", "Bearer " + token);
+    const postLength = await getResponseLength();
 
-    const getResponse = await request(app).get("/api/blogs")
     expect(result.status).toEqual(401);
-    expect(getResponse.body.length).toEqual(1);
+    expect(preLength).toEqual(postLength);
   });
   it("POST fails if malformatted auth header", async () => {
     const token = "aoe;qhjkarc.,gqkjnt";
@@ -221,13 +235,14 @@ describe("Blogs", () => {
       likes: 8
     };
 
+    const preLength = await getResponseLength();
     const result = await request(app)
       .post("/api/blogs")
       .send(blog)
       .set("Authorization", "Bearer " + token);
+    const postLength = await getResponseLength();
 
-    const getResponse = await request(app).get("/api/blogs")
     expect(result.status).toEqual(401);
-    expect(getResponse.body.length).toEqual(1);
+    expect(preLength).toEqual(postLength);
   });
 });
