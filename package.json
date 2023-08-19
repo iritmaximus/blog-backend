@@ -9,7 +9,8 @@
     "start": "node index.js",
     "lint": "eslint .",
     "fix": "eslint . --fix",
-    "test": "NODE_ENV=test jest --verbose --runInBand --forceExit"
+    "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
+    "start:test": "NODE_ENV=test node index.js"
   },
   "jest": {
     "testEnvironment": "node"
