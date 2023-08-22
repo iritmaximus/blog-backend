@@ -3,13 +3,10 @@ const request = require("supertest");
 
 const listHelper = require("../utils/list_helper");
 
-
-
 test("dummy returns one", () => {
   const result = listHelper.dummy(listHelper.blogs);
   expect(result).toBe(1);
 });
-
 
 describe("total likes", () => {
   test("of empty list is zero", () => {
@@ -24,8 +21,8 @@ describe("total likes", () => {
       author: "Edsger W. Dijkstra",
       url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
       likes: 5,
-      __v: 0
-    }
+      __v: 0,
+    },
   ];
 
   test("when list has only one blog equals the likes of that", () => {
@@ -43,7 +40,7 @@ describe("favoriteBlog", () => {
   let blog = {
     title: "Canonical string reduction",
     author: "Edsger W. Dijkstra",
-    likes: 12
+    likes: 12,
   };
 
   test("of empty list", () => {
@@ -63,25 +60,24 @@ describe("favoriteBlog", () => {
 });
 
 describe("most blogs", () => {
-
   // one blog
   let blog = {
     title: "Canonical string reduction",
     author: "Edsger W. Dijkstra",
     url: "initial.org",
-    likes: 12
+    likes: 12,
   };
 
   // comparison for single blog
   const comparisonSingleBlog = {
     author: "Edsger W. Dijkstra",
-    blogs: 1
+    blogs: 1,
   };
 
   // comparison
   const comparisonBlog = {
     author: "Robert C. Martin",
-    blogs: 3
+    blogs: 3,
   };
 
   test("of no blogs", () => {

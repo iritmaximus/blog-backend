@@ -2,8 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
-
-const getToken = request => {
+const getToken = (request) => {
   const tokenWithBearer = request.get("authorization");
   if (tokenWithBearer && tokenWithBearer.startsWith("Bearer ")) {
     return tokenWithBearer.replace("Bearer ", "");
@@ -25,7 +24,7 @@ const userExtractor = async (request, response, next) => {
       console.log("Malformatted token:", request.token);
       request.user = null;
     }
-    const user = await User.findOne({"_id": decodedToken.id});
+    const user = await User.findOne({ _id: decodedToken.id });
     request.user = user;
   } else {
     request.user = null;
@@ -35,5 +34,5 @@ const userExtractor = async (request, response, next) => {
 
 module.exports = {
   tokenExtractor,
-  userExtractor
+  userExtractor,
 };

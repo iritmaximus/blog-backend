@@ -16,9 +16,7 @@ describe("Users", () => {
       password: "notsecurepassword",
     };
 
-    const result = await request(app)
-      .post("/api/users")
-      .send(user);
+    const result = await request(app).post("/api/users").send(user);
 
     expect(result.status).toEqual(201);
     expect(result.body.name).toEqual("Pööperöinen");
@@ -31,9 +29,7 @@ describe("Users", () => {
       password: "somethingnotsecure",
     };
 
-    await request(app)
-      .post("/api/users")
-      .send(user);
+    await request(app).post("/api/users").send(user);
 
     const full_request = await request(app).get("/api/users");
     const result = full_request.body[0];
@@ -41,7 +37,6 @@ describe("Users", () => {
     expect(result.username).toEqual("pöpö456");
     expect(result.username).toEqual("pöpö456");
     expect(result.password).not.toBeDefined();
-
   });
   it("POST password or hash not in object", async () => {
     const user = {
@@ -50,9 +45,7 @@ describe("Users", () => {
       password: "something",
     };
 
-    await request(app)
-      .post("/api/users")
-      .send(user);
+    await request(app).post("/api/users").send(user);
 
     const full_request = await request(app).get("/api/users");
     const result = full_request.body[0];
@@ -71,12 +64,8 @@ describe("Users", () => {
       password: "notsecurepassword",
     };
 
-    await request(app)
-      .post("/api/users")
-      .send(uniqueUser);
-    const result = await request(app)
-      .post("/api/users")
-      .send(duplicateUser);
+    await request(app).post("/api/users").send(uniqueUser);
+    const result = await request(app).post("/api/users").send(duplicateUser);
 
     expect(result.status).toEqual(400);
     expect(result.body.error).toBeDefined();
@@ -85,11 +74,9 @@ describe("Users", () => {
     const user = {
       name: "Hihi",
       username: "ai",
-      password: "notsecureatall"
+      password: "notsecureatall",
     };
-    const result = await request(app)
-      .post("/api/users")
-      .send(user);
+    const result = await request(app).post("/api/users").send(user);
 
     expect(result.status).toEqual(400);
     expect(result.body.error).toBeDefined();
@@ -98,11 +85,9 @@ describe("Users", () => {
     const user = {
       name: "Hihi",
       username: "hihhih",
-      password: "ai"
+      password: "ai",
     };
-    const result = await request(app)
-      .post("/api/users")
-      .send(user);
+    const result = await request(app).post("/api/users").send(user);
 
     expect(result.status).toEqual(400);
     expect(result.body.error).toBeDefined();
@@ -111,13 +96,10 @@ describe("Users", () => {
     const user = {
       name: "Hihi",
       username: "hihhih",
-      password: "ai"
+      password: "ai",
     };
-    const requestResult = await request(app)
-      .post("/api/users")
-      .send(user);
-    const result = await request(app)
-      .get("/api/users");
+    const requestResult = await request(app).post("/api/users").send(user);
+    const result = await request(app).get("/api/users");
 
     expect(requestResult.status).toEqual(400);
     expect(result.body.length).toEqual(0);
@@ -126,23 +108,20 @@ describe("Users", () => {
     const user = {
       name: "Hih",
       username: "hihhih",
-      password: "aiai"
+      password: "aiai",
     };
     const duplicateUser = {
       name: "Hih",
       username: "hihhih",
-      password: "aiai"
+      password: "aiai",
     };
 
-    await request(app)
-      .post("/api/users")
-      .send(user);
+    await request(app).post("/api/users").send(user);
     const requestResult = await request(app)
       .post("/api/users")
       .send(duplicateUser);
 
-    const result = await request(app)
-      .get("/api/users");
+    const result = await request(app).get("/api/users");
 
     expect(requestResult.status).toEqual(400);
     expect(result.body.length).toEqual(1);

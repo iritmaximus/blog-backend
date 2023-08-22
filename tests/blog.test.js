@@ -5,16 +5,13 @@ const app = require("../app");
 const Blog = require("../models/blog");
 const User = require("../models/user");
 
-
 const generateToken = async (user) => {
   const userForToken = {
     username: user.username,
-    password: user.password
+    password: user.password,
   };
 
-  const response = await request(app)
-    .post("/api/login")
-    .send(userForToken);
+  const response = await request(app).post("/api/login").send(userForToken);
 
   const token = response.body.token;
   if (response.status === 200 && token) {
@@ -39,21 +36,19 @@ let blog = {
   title: "Canonical string reduction",
   author: "Edsger W. Dijkstra",
   url: "initial.org",
-  likes: 12
+  likes: 12,
 };
 
 describe("Blogs", () => {
   beforeEach(async () => {
     await User.deleteMany({});
-    await request(app)
-      .post("/api/users")
-      .send(user);
+    await request(app).post("/api/users").send(user);
 
     // blog is always owned by the automatically created user above
     await Blog.deleteMany({});
     await request(app)
       .post("/api/blogs")
-      .set("Authorization", "Bearer " + await generateToken(user))
+      .set("Authorization", "Bearer " + (await generateToken(user)))
       .send(blog);
   });
 
@@ -80,7 +75,7 @@ describe("Blogs", () => {
       title: "Test test",
       author: "me",
       url: "https://me.org",
-      likes: 5
+      likes: 5,
     };
 
     await request(app)
@@ -99,7 +94,7 @@ describe("Blogs", () => {
     const noLikesItem = {
       title: "New test",
       author: "Someone",
-      url: "hih.xyz"
+      url: "hih.xyz",
     };
 
     await request(app)
@@ -117,12 +112,12 @@ describe("Blogs", () => {
     const noUrlItem = {
       title: "Music",
       author: "Someone I used to know",
-      likes: 40
+      likes: 40,
     };
     const noTitleItem = {
       author: "Someone I used to know",
       url: "pöps.dev",
-      likes: 40
+      likes: 40,
     };
 
     const preLength = getResponseLength();
@@ -166,7 +161,7 @@ describe("Blogs", () => {
   it("PUT updates items likes", async () => {
     const token = await generateToken(user);
     const blog = {
-      likes: 230
+      likes: 230,
     };
     const items = await Blog.find({});
     await request(app)
@@ -181,8 +176,8 @@ describe("Blogs", () => {
   it("PUT sends 404 if not found", async () => {
     const token = await generateToken(user);
     const blog = {
-      likes: 2358
-    }; 
+      likes: 2358,
+    };
 
     const result = await request(app)
       .put("/api/blogs/1")
@@ -195,25 +190,24 @@ describe("Blogs", () => {
       title: "Test test test",
       author: "me, duh",
       url: "https://me.dev",
-      likes: 6
+      likes: 6,
     };
 
     const preLength = getResponseLength();
-    const result = await request(app)
-      .post("/api/blogs")
-      .send(blog);
+    const result = await request(app).post("/api/blogs").send(blog);
     const postLength = getResponseLength();
 
     expect(result.status).toEqual(401);
     expect(preLength).toEqual(postLength);
   });
   it("POST fails if incorrect user auth header", async () => {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InDDtnDDtjEyMyIsImlkIjoiNjQ5YmQ3NjFjMmNiMDVjMDJhMTFlYzgzIiwiaWF0IjoxNjg3OTM1MDA2fQ.qoWfO9xdrOPUs8ynF_9SVvuIv7d8xUch_hztBMyKeLU";
+    const token =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InDDtnDDtjEyMyIsImlkIjoiNjQ5YmQ3NjFjMmNiMDVjMDJhMTFlYzgzIiwiaWF0IjoxNjg3OTM1MDA2fQ.qoWfO9xdrOPUs8ynF_9SVvuIv7d8xUch_hztBMyKeLU";
     const blog = {
       title: "Test test test",
       author: "me, duh",
       url: "https://me.dev",
-      likes: 7
+      likes: 7,
     };
 
     const preLength = await getResponseLength();
@@ -232,7 +226,7 @@ describe("Blogs", () => {
       title: "Test test test",
       author: "me, duh",
       url: "https://me.dev",
-      likes: 8
+      likes: 8,
     };
 
     const preLength = await getResponseLength();

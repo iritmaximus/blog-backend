@@ -11,20 +11,16 @@ const blogRouter = require("./controller/blog");
 const userRouter = require("./controller/user");
 const loginRouter = require("./controller/login");
 
-
-
-
 // connect to the db
 try {
   mongoose.set("strictQuery", true);
   mongoose.connect(config.MONGO_URI);
-} catch(e) {
+} catch (e) {
   console.log("error connecting to the db");
   process.exit(1);
 }
 
 console.log("connected to the db");
-
 
 app.use(cors());
 app.use(express.json());
